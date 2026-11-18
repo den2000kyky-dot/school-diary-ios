@@ -1,0 +1,64 @@
+name: iOS Simulator Smoke Test
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'SchoolDiary/**'
+      - '.github/workflows/simulator-smoke.yml'
+
+jobs:
+  smoke:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build for iOS Simulator
+        run: |
+          set -e
+          xcodebuild \
+            -project SchoolDiary.xcodeproj \
+            -scheme SchoolDiary \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+
+      - name: Boot simulator, install and launch app
+        run: |
+          set -e
+          SIM=$(python3 -c '
+import json, subprocess
+data = json.loads(subprocess.check_output(["xcrun", "simctl", "list", "devices", "available", "-j"]))
+for runtimes in data["devices"].values():
+    for dev in runtimes:
+        if dev["name"].startswith("iPhone") and dev.get("isAvailable"):
+            print(dev["udid"])
+            break
+    else:
+        continue
+    break
+')
+          echo "SIM=$SIM"
+          xcrun simctl boot "$SIM" || true
+          xcrun simctl bootstatus "$SIM" -b
+          APP="$RUNNER_TEMP/DerivedData/Build/Products/Debug-iphonesimulator/SchoolDiary.app"
+          test -d "$APP"
+          xcrun simctl install booted "$APP"
+          xcrun simctl launch booted com.den2000kyky.schooldiary
+          sleep 6
+          xcrun simctl io booted screenshot "$GITHUB_WORKSPACE/iphone-screenshot.png"
+          xcrun simctl list apps booted | grep -i schooldiary || true
+          echo "--- app process ---"
+          xcrun simctl spawn booted launchctl list | grep -i schooldiary || true
+
+      - name: Upload screenshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: iphone-screenshot
+          path: iphone-screenshot.png
+          if-no-files-found: error
