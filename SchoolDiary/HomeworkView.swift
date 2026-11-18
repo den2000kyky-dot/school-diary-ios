@@ -7,7 +7,10 @@ struct HomeworkView: View {
 
     private var odd: Bool { isOddWeek(date) }
     private var weekday: Int { Calendar.current.component(.weekday, from: date) }
-    private var lessons: [String] { scheduleData[weekday]?[odd ? "odd" : "even"] ?? [] }
+    private var lessons: [String] {
+        let entry = scheduleData[weekday]
+        return odd ? (entry?.odd ?? []) : (entry?.even ?? [])
+    }
 
     var body: some View {
         ScrollView {

@@ -37,7 +37,8 @@ struct ScheduleView: View {
                 }
 
                 ForEach(1...5, id: \.self) { weekday in
-                    let lessons = scheduleData[weekday]?[odd ? "odd" : "even"] ?? []
+                    let entry = scheduleData[weekday]
+                    let lessons = odd ? (entry?.odd ?? []) : (entry?.even ?? [])
                     VStack(alignment: .leading, spacing: 6) {
                         HStack {
                             Text(weekdayNamesFor(state.lang)[weekday])

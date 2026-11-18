@@ -164,7 +164,6 @@ enum API {
         return nil
     }
 
-    @discardableResult
     static func sendMessage(chatId: String, uid: String, name: String, text: String?, image: String?) async throws {
         var body: [String: Any] = [
             "senderId": uid,
@@ -239,7 +238,7 @@ final class AppState: ObservableObject {
                     "name": cleanName, "online": true, "updatedAt": Int(Date().timeIntervalSince1970 * 1000),
                 ])
                 uid = newUid
-                name = cleanName
+                self.name = cleanName
                 deviceKey = key
             } else {
                 guard let account = try await API.findAccount(cleanName),
@@ -250,7 +249,7 @@ final class AppState: ObservableObject {
                     return
                 }
                 uid = account.uid
-                name = account.accountName
+                self.name = account.accountName
                 deviceKey = account.key
             }
             UserDefaults.standard.set(uid, forKey: "uid")
