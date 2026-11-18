@@ -316,7 +316,7 @@
 			};
 			name = Release;
 		};
-		B00000000000000000000051 /* Debug */ = {
+		B00000000000000000000071 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -332,7 +332,7 @@
 			};
 			name = Debug;
 		};
-		B00000000000000000000052 /* Release */ = {
+		B00000000000000000000072 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -372,8 +372,8 @@
 		B00000000000000000000062 /* Build configuration list for PBXNativeTarget "SchoolDiaryUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B00000000000000000000051 /* Debug */,
-				B00000000000000000000052 /* Release */,
+				B00000000000000000000071 /* Debug */,
+				B00000000000000000000072 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
