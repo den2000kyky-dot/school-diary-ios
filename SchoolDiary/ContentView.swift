@@ -60,12 +60,20 @@ struct LoginView: View {
                     .multilineTextAlignment(.center)
 
                 TextField(tr("name", state.lang), text: $name)
-                    .textFieldStyle(.roundedBorder)
+                    .textFieldStyle(.plain)
+                    .padding(12)
+                    .background(Color.appCard)
+                    .cornerRadius(12)
+                    .foregroundColor(.white)
                     .textInputAutocapitalization(.words)
                     .autocorrectionDisabled()
 
                 SecureField(tr("password", state.lang), text: $password)
-                    .textFieldStyle(.roundedBorder)
+                    .textFieldStyle(.plain)
+                    .padding(12)
+                    .background(Color.appCard)
+                    .cornerRadius(12)
+                    .foregroundColor(.white)
 
                 if let error = state.errorMessage {
                     Text(error)

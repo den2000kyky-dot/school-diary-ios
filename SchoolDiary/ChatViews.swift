@@ -115,7 +115,11 @@ struct ConversationView: View {
                         Image(systemName: "paperclip").font(.title3).foregroundColor(.appPrimary)
                     }
                     TextField(tr("message", state.lang), text: $text)
-                        .textFieldStyle(.roundedBorder)
+                        .textFieldStyle(.plain)
+                        .padding(10)
+                        .background(Color.appCard)
+                        .cornerRadius(18)
+                        .foregroundColor(.white)
                         .onSubmit { send() }
                     Button { send() } label: {
                         Image(systemName: "paperplane.fill").foregroundColor(.appPrimary)

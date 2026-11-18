@@ -21,7 +21,11 @@ struct ProfileView: View {
                     VStack(alignment: .leading) {
                         Text(tr("name", state.lang)).font(.subheadline).foregroundColor(.appMuted)
                         TextField(tr("name", state.lang), text: $editedName)
-                            .textFieldStyle(.roundedBorder)
+                            .textFieldStyle(.plain)
+                            .padding(12)
+                            .background(Color.appCard)
+                            .cornerRadius(12)
+                            .foregroundColor(.white)
                             .textInputAutocapitalization(.words)
                         Button {
                             Task {
