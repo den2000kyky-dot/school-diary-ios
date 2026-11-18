@@ -287,6 +287,9 @@ final class AppState: ObservableObject {
         try? await API.request("users/\(uid)", method: "PATCH", body: [
             "name": clean, "updatedAt": Int(Date().timeIntervalSince1970 * 1000),
         ])
+        if let deviceKey = deviceKey {
+            try? await API.request("deviceAccounts/\(deviceKey)", method: "PATCH", body: ["name": clean])
+        }
         await refreshUsers()
     }
 
