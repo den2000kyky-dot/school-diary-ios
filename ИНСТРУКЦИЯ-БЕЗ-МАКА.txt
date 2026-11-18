@@ -1,0 +1,69 @@
+КАК ПОЛУЧИТЬ ПРИЛОЖЕНИЕ НА IPHONE БЕЗ MAC
+==========================================
+
+У тебя есть Git и VS Code — этого достаточно. Сборка идёт в облаке на
+бесплатном macOS-раннере GitHub Actions, а подпись и установка — на Windows
+через Sideloadly с обычным (бесплатным) Apple ID.
+
+ШАГ 1. GitHub
+-------------
+1. Зайди на https://github.com и создай аккаунт (если ещё нет).
+2. Создай НОВЫЙ ПУБЛИЧНЫЙ репозиторий, например school-diary-ios
+   (публичный — чтобы macOS-раннер был бесплатным).
+3. Скопируй содержимое папки ios-app (ВСЁ, включая скрытую папку .github)
+   в отдельную папку, например C:\SchoolDiaryIOS.
+4. Открой эту папку в VS Code → терминал (Ctrl+`) и выполни:
+
+     git init
+     git add .
+     git commit -m "iOS app"
+     git remote add origin https://github.com/ТВОЙ_ЛОГИН/school-diary-ios.git
+     git push -u origin main
+
+   (если GitHub создал ветку master — используй master вместо main).
+   При запросе логина/пароля GitHub сейчас просит Personal Access Token:
+   GitHub → Settings → Developer settings → Personal access tokens →
+   Tokens (classic) → Generate new token с правом repo.
+
+   Либо запусти файл push-to-github.ps1 из этой папки:
+     .\push-to-github.ps1 https://github.com/ТВОЙ_ЛОГИН/school-diary-ios.git
+
+ШАГ 2. Ждём сборку
+------------------
+В репозитории открой вкладку Actions → последний запуск "Build iOS IPA".
+Через 2-5 минут появится артефакт SchoolDiary-unsigned-ipa — скачай его
+и распакуй (внутри SchoolDiary.ipa).
+
+Если сборка красная — скопируй лог ошибки оттуда и пришли мне, я исправлю
+код и ты сделаешь новый commit/push — сборка повторится автоматически.
+
+ШАГ 3. Ставим на iPhone с Windows
+---------------------------------
+1. Скачай и установи Sideloadly: https://sideloadly.io (бесплатно),
+   при установке согласись поставить iTunes/Apple Mobile Device Support —
+   это нужно для подключения iPhone по кабелю.
+2. Подключи iPhone к ПК кабелем, на телефоне нажми "Доверять".
+3. В Sideloadly:
+   - IPA: выбери скачанный SchoolDiary.ipa
+   - Apple ID: введи свой обычный Apple ID
+   - Password: вместо пароля введи APP-SPECIFIC PASSWORD.
+     Создать его: https://appleid.apple.com → раздел "Sign-In and Security"
+     → "App-Specific Passwords" → "+", скопировать без пробелов.
+   - нажми Start.
+4. На iPhone появится приложение "School Diary". Если при первом запуске
+   ругается сертификат: Настройки → Общие → VPN и управление устройством
+   → доверь своё Apple ID.
+
+ВАЖНО: с бесплатным Apple ID подпись живёт 7 дней. Раз в неделю подключи
+телефон к ПК и повтори шаг 3 (можно просто нажать Start в Sideloadly —
+данные приложения при этом сохраняются).
+
+ВХОД В ПРИЛОЖЕНИЕ
+-----------------
+То же имя и пароль, что и в Android-версии. Это тот же аккаунт, те же чаты
+и домашние задания (пароль проверяется тем же алгоритмом).
+
+ЧТО УМЕЕТ iOS-ВЕРСИЯ
+--------------------
+ДЗ, розклад, общий чат и личные чаты, фото, uk/ru/en, профиль.
+Голосовые звонки пока только в Android-версии.

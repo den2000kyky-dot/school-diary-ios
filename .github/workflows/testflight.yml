@@ -1,0 +1,52 @@
+name: Upload to TestFlight
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'testflight-*'
+
+jobs:
+  upload:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Import signing assets
+        env:
+          CERT_P12_BASE64: ${{ secrets.CERT_P12_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.CERT_PASSWORD }}
+          PROFILE_BASE64: ${{ secrets.PROFILE_BASE64 }}
+          ASC_KEY_BASE64: ${{ secrets.ASC_KEY_BASE64 }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -e
+          mkdir -p "$RUNNER_TEMP/signing" "$HOME/Library/MobileDevice/Provisioning Profiles"
+          printf '%s' "$CERT_P12_BASE64" | base64 --decode > "$RUNNER_TEMP/signing/cert.p12"
+          printf '%s' "$PROFILE_BASE64" | base64 --decode > "$RUNNER_TEMP/signing/profile.mobileprovision"
+          printf '%s' "$ASC_KEY_BASE64" | base64 --decode > "$RUNNER_TEMP/signing/AuthKey_${ASC_KEY_ID}.p8"
+
+          security create-keychain -p "temp123" build.keychain
+          security set-keychain-settings -lut 21600 build.keychain
+          security unlock-keychain -p "temp123" build.keychain
+          security import "$RUNNER_TEMP/signing/cert.p12" -k build.keychain -P "$CERT_PASSWORD" -T /usr/bin/codesign -A
+          security set-key-partition-list -S apple-tool:,apple: -s -k "temp123" build.keychain
+          security list-keychains -d user -s build.keychain $(security list-keychains -d user | tr -d '"')
+          cp "$RUNNER_TEMP/signing/profile.mobileprovision" "$HOME/Library/MobileDevice/Provisioning Profiles/"
+
+      - name: Build and upload
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_PATH: ${{ runner.temp }}/signing/AuthKey_${{ secrets.ASC_KEY_ID }}.p8
+          CERT_NAME: ${{ secrets.CERT_NAME }}
+          PROFILE_NAME: ${{ secrets.PROFILE_NAME }}
+        run: bundle exec fastlane beta

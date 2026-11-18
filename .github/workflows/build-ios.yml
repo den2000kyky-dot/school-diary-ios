@@ -1,0 +1,44 @@
+name: Build iOS IPA
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show Xcode
+        run: xcodebuild -version
+
+      - name: Build unsigned device IPA
+        run: |
+          set -e
+          xcodebuild \
+            -project SchoolDiary.xcodeproj \
+            -scheme SchoolDiary \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/SchoolDiary.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_STYLE=Manual \
+            archive
+
+          mkdir -p "$RUNNER_TEMP/ipa/Payload"
+          cp -R "$RUNNER_TEMP/SchoolDiary.xcarchive/Products/Applications/SchoolDiary.app" \
+                "$RUNNER_TEMP/ipa/Payload/SchoolDiary.app"
+          cd "$RUNNER_TEMP/ipa"
+          zip -qr "$GITHUB_WORKSPACE/SchoolDiary-unsigned.ipa" Payload
+          ls -lh "$GITHUB_WORKSPACE/SchoolDiary-unsigned.ipa"
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: SchoolDiary-unsigned-ipa
+          path: SchoolDiary-unsigned.ipa
+          if-no-files-found: error
