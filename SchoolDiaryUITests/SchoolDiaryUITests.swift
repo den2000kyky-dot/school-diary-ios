@@ -8,7 +8,9 @@ final class SchoolDiaryUITests: XCTestCase {
         super.setUp()
         continueAfterFailure = false
         app = XCUIApplication()
-        shotDir = ProcessInfo.processInfo.environment["SHOT_DIR"] ?? NSTemporaryDirectory()
+        shotDir = (Bundle.main.object(forInfoDictionaryKey: "SHOT_DIR") as? String)
+            ?? ProcessInfo.processInfo.environment["SHOT_DIR"]
+            ?? NSTemporaryDirectory()
         try? FileManager.default.createDirectory(atPath: shotDir, withIntermediateDirectories: true)
     }
 
