@@ -31,18 +31,7 @@ jobs:
       - name: Boot simulator, install and launch app
         run: |
           set -e
-          SIM=$(python3 -c '
-import json, subprocess
-data = json.loads(subprocess.check_output(["xcrun", "simctl", "list", "devices", "available", "-j"]))
-for runtimes in data["devices"].values():
-    for dev in runtimes:
-        if dev["name"].startswith("iPhone") and dev.get("isAvailable"):
-            print(dev["udid"])
-            break
-    else:
-        continue
-    break
-')
+          SIM=$(python3 -c "import json,subprocess; d=json.loads(subprocess.check_output(['xcrun','simctl','list','devices','available','-j'])); print(next(dev['udid'] for rt in d['devices'].values() for dev in rt if dev['name'].startswith('iPhone') and dev.get('isAvailable')))")
           echo "SIM=$SIM"
           xcrun simctl boot "$SIM" || true
           xcrun simctl bootstatus "$SIM" -b
