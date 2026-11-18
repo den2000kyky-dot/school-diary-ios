@@ -1,0 +1,35 @@
+name: UI Walkthrough
+
+on:
+  workflow_dispatch:
+
+jobs:
+  walkthrough:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run automated UI walkthrough
+        run: |
+          set -e
+          mkdir -p "$GITHUB_WORKSPACE/screenshots"
+          SIM=$(python3 -c "import json,subprocess; d=json.loads(subprocess.check_output(['xcrun','simctl','list','devices','available','-j'])); print(next(dev['name'] for rt in d['devices'].values() for dev in rt if dev['name'].startswith('iPhone') and dev.get('isAvailable')))")
+          echo "Using simulator: $SIM"
+          SHOT_DIR="$GITHUB_WORKSPACE/screenshots" xcodebuild test \
+            -project SchoolDiary.xcodeproj \
+            -scheme SchoolDiary \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,name=$SIM" \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            -only-testing:SchoolDiaryUITests/SchoolDiaryUITests/testWalkthrough
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-walkthrough-screenshots
+          path: screenshots
+          if-no-files-found: error

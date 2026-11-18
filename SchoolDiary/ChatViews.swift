@@ -29,6 +29,7 @@ struct ChatListView: View {
                     .background(Color.appCard)
                     .cornerRadius(18)
                 }
+                .accessibilityIdentifier("generalChat")
 
                 Text("\(tr("students", state.lang)) · \(others.count)")
                     .font(.subheadline.weight(.semibold))
@@ -115,6 +116,7 @@ struct ConversationView: View {
                         Image(systemName: "paperclip").font(.title3).foregroundColor(.appPrimary)
                     }
                     TextField(tr("message", state.lang), text: $text)
+                        .accessibilityIdentifier("messageInput")
                         .textFieldStyle(.plain)
                         .padding(10)
                         .background(Color.appCard)
@@ -124,6 +126,7 @@ struct ConversationView: View {
                     Button { send() } label: {
                         Image(systemName: "paperplane.fill").foregroundColor(.appPrimary)
                     }
+                    .accessibilityIdentifier("sendButton")
                     .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
                 .padding(10)

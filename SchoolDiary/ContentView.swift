@@ -60,6 +60,7 @@ struct LoginView: View {
                     .multilineTextAlignment(.center)
 
                 TextField(tr("name", state.lang), text: $name)
+                    .accessibilityIdentifier("loginName")
                     .textFieldStyle(.plain)
                     .padding(12)
                     .background(Color.appCard)
@@ -69,6 +70,7 @@ struct LoginView: View {
                     .autocorrectionDisabled()
 
                 SecureField(tr("password", state.lang), text: $password)
+                    .accessibilityIdentifier("loginPass")
                     .textFieldStyle(.plain)
                     .padding(12)
                     .background(Color.appCard)
@@ -88,6 +90,7 @@ struct LoginView: View {
                     if state.busy { ProgressView().tint(.appPrimary) }
                     else { Text(tr("signIn", state.lang)).fontWeight(.semibold) }
                 }
+                .accessibilityIdentifier("signIn")
                 .frame(maxWidth: .infinity)
                 .padding(14)
                 .background(Color.appPrimary)
@@ -100,6 +103,7 @@ struct LoginView: View {
                 } label: {
                     Text(tr("create", state.lang)).fontWeight(.semibold)
                 }
+                .accessibilityIdentifier("createAccount")
                 .frame(maxWidth: .infinity)
                 .padding(14)
                 .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.appPrimary, lineWidth: 1))
@@ -146,6 +150,7 @@ struct MainView: View {
                                 .foregroundColor(.white).fontWeight(.bold)
                         }
                     }
+                    .accessibilityIdentifier("profileButton")
                 }
             }
         }
